@@ -1,15 +1,22 @@
 package org.apache.tools.ant.taskdefs.optional.watch;
 
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Task;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
+import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-import static java.nio.file.StandardWatchEventKinds.*;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Task;
 
 public class WatchTask extends Task {
 
@@ -45,7 +52,9 @@ public class WatchTask extends Task {
     public void execute() throws BuildException {
         final ShutdownTask shutdown = new ShutdownTask(Thread.currentThread());
         try {
+        	
             watcher = FileSystems.getDefault().newWatchService();
+            //Sysem.out.println(watcher)
 
             for( WatchedTarget watch : targets ) {
                 watch.startWatching( getProject(), watcher );
@@ -81,6 +90,7 @@ public class WatchTask extends Task {
             throw new BuildException("IO Exception", e);
         } catch( InterruptedException e ) {
             // todo shutting down
+            throw new BuildException("InterruptedException Exception", e);
         } finally {
             for( WatchedTarget watch : targets ) {
                 watch.stopWatching(watcher);
@@ -94,5 +104,6 @@ public class WatchTask extends Task {
     public void addWhen( WatchedTarget watching ) {
         if( targets == null ) targets = new ArrayList<WatchedTarget>();
         targets.add( watching );
+        System.out.println("test:");
     }
 }
