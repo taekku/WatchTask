@@ -1,0 +1,29 @@
+<project name="myProject" basedir="." default="run">
+	<taskdef name="watch"
+	           classname="org.apache.tools.ant.taskdefs.optional.watch.WatchTask"
+	           classpath="/Users/mama/Eclipse/Neon/workspace/WatchTask/bin" />
+	
+    <property name="watched.dir" value="${basedir}/src/test/resources"/>
+    <property name="src.dir" value="${basedir}/src/main/java"/>
+    <property name="src.test.dir" value="${basedir}/src/test/java"/>
+    <property name="target.dir" value="${basedir}/target/classes"/>
+    <property name="target.test.dir" value="${basedir}/target/test-classes"/>
+
+    <target name="run">
+        <watch>
+            <when>
+                <target name="printMessage"/>
+                <!-- <fileset dir="${watched.dir}" includes="**/*"/> -->
+                <fileset id="dir.resources" dir="${watched.dir}">
+    				<exclude name="**/*.properties" />
+	    			<exclude name="**/*.java" />
+	    		</fileset>
+            </when>
+        </watch>
+    </target>
+
+    <target name="printMessage">
+        <echo>Something has happened.</echo>
+        <echo>A file has changed! ${watched.file}</echo>
+    </target>
+</project>
